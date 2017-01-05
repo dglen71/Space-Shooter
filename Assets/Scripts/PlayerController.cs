@@ -17,26 +17,56 @@ public class PlayerController : MonoBehaviour {
 	public float speed;
 
 	public GameObject shot;
+	public GameObject spreadShot;
 	public Transform shotSpawn;
 
 	public float fireRate;
 	private float nextFire;
 
 	private AudioSource audioSource;
+
+	public bool poweredUpSpread;
+	public float initPowerUpTime;
+	public float powerUpTime;
 	
 	void Start()
 	{
 		rb = GetComponent<Rigidbody> ();
 		audioSource = GetComponent<AudioSource> ();
+		poweredUpSpread = false;
+		powerUpTime = 0;
 	}
 
 	void Update()
 	{
-		if (Input.GetButton("Fire1") && Time.time > nextFire)
+
+		if (poweredUpSpread == true) {
+
+			powerUpTime = initPowerUpTime;
+			poweredUpSpread = false;
+		}
+		if (powerUpTime > 0) {
+
+			powerUpTime -= Time.deltaTime;
+		}
+		if (powerUpTime < 0) {
+
+			powerUpTime = 0;
+		}
+
+		if (Input.GetKey(KeyCode.Space) && Time.time > nextFire)
 		{
-			nextFire = Time.time + fireRate;	
-			Instantiate (shot, shotSpawn.position, shotSpawn.rotation);
-			audioSource.Play ();
+			if (powerUpTime == 0) {
+
+				nextFire = Time.time + fireRate;	
+				Instantiate (shot, shotSpawn.position, shotSpawn.rotation);
+				audioSource.Play ();
+			} else if (powerUpTime > 0) {
+				
+				SpreadShot ();
+			}
+
+
 		}
 
 	}
@@ -58,5 +88,19 @@ public class PlayerController : MonoBehaviour {
 			);
 
 		rb.rotation = Quaternion.Euler(0.0f,0.0f,rb.velocity.x * -tilt);
+	}
+
+	void SpreadShot()
+	{
+		Quaternion leftRotation = Quaternion.identity;
+		leftRotation.eulerAngles = new Vector3 (0.0f, -45.0f, 0.0f);
+		Quaternion rightRotation = Quaternion.identity;
+		rightRotation.eulerAngles = new Vector3 (0.0f, 45.0f, 0.0f);
+		nextFire = Time.time + fireRate;
+		Instantiate (spreadShot, shotSpawn.position, shotSpawn.rotation);
+		Instantiate (spreadShot, shotSpawn.position, leftRotation);
+		Instantiate (spreadShot, shotSpawn.position, rightRotation);
+		audioSource.Play ();
+
 	}
 }

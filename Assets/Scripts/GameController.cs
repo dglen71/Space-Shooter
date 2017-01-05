@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
 
 	public GameObject hazard;
+	public GameObject hazardPowerUp;
 	public Vector3 spawnValues;
 	public int hazardCount;
 	public float spawnWait;
@@ -15,10 +16,12 @@ public class GameController : MonoBehaviour {
 	public GUIText scoreText;
 	public GUIText restartText;
 	public GUIText gameOverText;
+	public GUIText highscoreCountText;
 
 	private bool gameOver;
 	private bool restart;
 	private int score;
+	private static int highscore;
 
 	// Use this for initialization
 	void Start () {
@@ -32,6 +35,9 @@ public class GameController : MonoBehaviour {
 
 		restartText.text = "";
 		gameOverText.text = "";
+		highscoreCountText.text = "" + highscore;
+		highscoreCountText.color = Color.grey;
+
 
 
 	}
@@ -40,14 +46,29 @@ public class GameController : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (spawnWait);
 		while (true) {
-			for (int i = 0; i < hazardCount; i++) {
 			
+			bool alreadySpawned = false;
+
+			for (int i = 0; i < hazardCount; i++) {
+
 				Vector3 spawnPosition = new Vector3 (Random.Range (-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
 				Quaternion spawnRotation = Quaternion.identity;
-				Instantiate (hazard, spawnPosition, spawnRotation);
+			
+
+				int spawnPowerUp = Random.Range(0,6);
+
+				if (spawnPowerUp == 1 && alreadySpawned == false) {
+					Instantiate (hazardPowerUp, spawnPosition, spawnRotation);
+					alreadySpawned = true;
+				} else if (spawnPowerUp != 1 || alreadySpawned == true) {
+					Instantiate (hazard, spawnPosition, spawnRotation);
+				}
 				yield return new WaitForSeconds (spawnWait);
 
 			}
+
+
+
 			yield return new WaitForSeconds (waveWait);
 
 			if (gameOver) {
@@ -67,6 +88,12 @@ public class GameController : MonoBehaviour {
 	{
 
 		score += newScoreValue;
+
+		if (score > highscore) {
+			highscore = score;
+			highscoreCountText.color = Color.green;
+		}
+
 		UpdateScore ();
 
 	}
@@ -75,6 +102,7 @@ public class GameController : MonoBehaviour {
 	{
 
 		scoreText.text = "Score: " + score;
+		highscoreCountText.text = "" + highscore;
 
 	}
 

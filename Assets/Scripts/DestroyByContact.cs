@@ -8,9 +8,16 @@ public class DestroyByContact : MonoBehaviour {
 	public GameObject playerExplosion;
 	public int scoreValue;
 	private GameController gameController;
+	public bool destroyed;
+
+	//private PlayerController player;
 
 	// Use this for initialization
 	void Start () {
+
+		destroyed = false;
+		//GameObject playerObject = GameObject.FindWithTag ("Player");
+		//player = playerObject.GetComponent<PlayerController> ();
 		
 		GameObject gameControllerObject = GameObject.FindWithTag ("GameController");
 		if (gameControllerObject != null)
@@ -25,6 +32,7 @@ public class DestroyByContact : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{	
+		
 		if (other.tag == "Boundary") {
 			return;
 		}
@@ -35,15 +43,25 @@ public class DestroyByContact : MonoBehaviour {
 
 		}
 
+		if (other.tag == "Bolt") {
+			destroyed = true;
+		}
+
 		gameController.AddScore (scoreValue);
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy (other.gameObject);
-		Destroy (gameObject);
+
 
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	// Update is called once per frame at the end
+	void LateUpdate () {
+		//Debug.Log (destroyed);
+
+		if (destroyed == true) {
+			
+			Destroy (gameObject);
+		}
 		
 	}
 }
