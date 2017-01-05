@@ -25,7 +25,6 @@ public class PowerUp : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Debug.Log (destroy.destroyed);
 		
 		if (destroy.destroyed == true) {
 

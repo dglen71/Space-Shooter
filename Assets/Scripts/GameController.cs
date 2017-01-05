@@ -23,6 +23,11 @@ public class GameController : MonoBehaviour {
 	private int score;
 	private static int highscore;
 
+	private int index;
+	public float initHazardSpeed;
+	public float maxHazardSpeed;
+	public float increaseSpeed;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -38,16 +43,34 @@ public class GameController : MonoBehaviour {
 		highscoreCountText.text = "" + highscore;
 		highscoreCountText.color = Color.grey;
 
+		//initHazardSpeed = -5.0f;
+
+
+
 
 
 	}
 
 	IEnumerator SpawnWaves()
 	{
+		index = 0;
 		yield return new WaitForSeconds (spawnWait);
 		while (true) {
 			
 			bool alreadySpawned = false;
+
+			if (index % 2 != 0) {
+				
+				hazardCount++; // Increases number of hazards in a wave by 1 every odd numbered turn
+				if ((initHazardSpeed * increaseSpeed) > maxHazardSpeed) {
+					
+					initHazardSpeed = initHazardSpeed * increaseSpeed;
+				} else if ((initHazardSpeed * increaseSpeed) <= maxHazardSpeed) {
+
+					initHazardSpeed = maxHazardSpeed;
+				}
+	
+			}
 
 			for (int i = 0; i < hazardCount; i++) {
 
@@ -63,13 +86,19 @@ public class GameController : MonoBehaviour {
 				} else if (spawnPowerUp != 1 || alreadySpawned == true) {
 					Instantiate (hazard, spawnPosition, spawnRotation);
 				}
+
 				yield return new WaitForSeconds (spawnWait);
+
+
 
 			}
 
 
 
+
 			yield return new WaitForSeconds (waveWait);
+
+			index++;
 
 			if (gameOver) {
 
