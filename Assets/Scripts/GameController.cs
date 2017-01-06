@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour {
 
 	public GameObject hazard;
 	public GameObject hazardPowerUp;
+	public GameObject hazardHinder;
 	public Vector3 spawnValues;
 	public int hazardCount;
 	public float spawnWait;
@@ -58,6 +59,7 @@ public class GameController : MonoBehaviour {
 		while (true) {
 			
 			bool alreadySpawned = false;
+			bool alreadySpawnedHinder = false;
 
 			if (index % 2 != 0) {
 				
@@ -78,12 +80,21 @@ public class GameController : MonoBehaviour {
 				Quaternion spawnRotation = Quaternion.identity;
 			
 
-				int spawnPowerUp = Random.Range(0,6);
+				int spawnPowerUp = Random.Range(0,11);//10 percent chance of spawning
+				int spawnHinder = Random.Range (0, 21);//5 percent chance of spawning
+				bool spawned = false;
 
 				if (spawnPowerUp == 1 && alreadySpawned == false) {
 					Instantiate (hazardPowerUp, spawnPosition, spawnRotation);
 					alreadySpawned = true;
-				} else if (spawnPowerUp != 1 || alreadySpawned == true) {
+					spawned = true;
+				}
+				if (spawnHinder == 1 && alreadySpawnedHinder == false && spawned == false) {
+					Instantiate (hazardHinder, spawnPosition, spawnRotation);
+					alreadySpawnedHinder = true;
+					spawned = true;
+				}
+				if ((spawnPowerUp != 1 || alreadySpawned == true) && (spawnHinder != 1 || alreadySpawnedHinder == true) && spawned == false) {
 					Instantiate (hazard, spawnPosition, spawnRotation);
 				}
 

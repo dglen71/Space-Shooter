@@ -30,6 +30,13 @@ public class PowerUp : MonoBehaviour {
 
 			player.poweredUpSpread = true;
 
+			if (player.hinderTime > 0) {
+
+				player.hindered = false;
+				player.hinderTime = 0;
+			}
+
+
 		}
 		
 	}
